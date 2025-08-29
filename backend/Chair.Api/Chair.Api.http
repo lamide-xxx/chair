@@ -1,0 +1,6 @@
+@Chair.Api_HostAddress = http://localhost:5170
+
+GET {{Chair.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
