@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Core/Chair.Core.csproj",
-      "projectName": "Chair.Core",
-      "projectPath": "/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Core/Chair.Core.csproj",
+      "projectUniqueName": "/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Domain/Chair.Domain.csproj",
+      "projectName": "Chair.Domain",
+      "projectPath": "/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Domain/Chair.Domain.csproj",
       "packagesPath": "/Users/olamide.abegunde/.nuget/packages/",
-      "outputPath": "/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Core/obj/",
+      "outputPath": "/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Domain/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/olamide.abegunde/.nuget/NuGet/NuGet.Config"
@@ -44,7 +44,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "9.0.200"
     },
     "frameworks": {
       "net8.0": {
@@ -60,13 +61,31 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.14, 8.0.14]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[8.0.14, 8.0.14]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.407/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/x64/sdk/9.0.201/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://cko-packages-791259062566.d.codeartifact.eu-west-1.amazonaws.com/nuget/cko-packages/v3/index.json."
+    }
+  ]
 }

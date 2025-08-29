@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chair.Api", "Chair.Api\Chair.Api.csproj", "{AE619BB8-FA28-46C4-89EF-5D692B7826C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chair.Core", "Chair.Core\Chair.Core.csproj", "{6ED17C91-A9FE-4D12-B85B-6F56D1A47DBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chair.Domain", "Chair.Domain\Chair.Domain.csproj", "{6ED17C91-A9FE-4D12-B85B-6F56D1A47DBB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chair.Infrastructure", "Chair.Infrastructure\Chair.Infrastructure.csproj", "{DABA9A53-002C-49BE-8664-7DC9C6931832}"
 EndProject

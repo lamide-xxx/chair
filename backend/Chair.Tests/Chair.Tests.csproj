@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Chair.Core\Chair.Core.csproj" />
+    <ProjectReference Include="..\Chair.Domain\Chair.Domain.csproj" />
     <ProjectReference Include="..\Chair.Api\Chair.Api.csproj" />
   </ItemGroup>
 

@@ -1,0 +1,11 @@
+/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Infrastructure/bin/Debug/net8.0/Chair.Infrastructure.deps.json
+/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Infrastructure/bin/Debug/net8.0/Chair.Infrastructure.dll
+/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Infrastructure/bin/Debug/net8.0/Chair.Infrastructure.pdb
+/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Infrastructure/obj/Debug/net8.0/Chair.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Infrastructure/obj/Debug/net8.0/Chair.Infrastructure.AssemblyInfoInputs.cache
+/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Infrastructure/obj/Debug/net8.0/Chair.Infrastructure.AssemblyInfo.cs
+/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Infrastructure/obj/Debug/net8.0/Chair.Infrastructure.csproj.CoreCompileInputs.cache
+/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Infrastructure/obj/Debug/net8.0/Chair.Infrastructure.dll
+/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Infrastructure/obj/Debug/net8.0/refint/Chair.Infrastructure.dll
+/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Infrastructure/obj/Debug/net8.0/Chair.Infrastructure.pdb
+/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Infrastructure/obj/Debug/net8.0/ref/Chair.Infrastructure.dll
