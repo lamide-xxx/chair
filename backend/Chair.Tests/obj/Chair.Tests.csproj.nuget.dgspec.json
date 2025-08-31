@@ -190,7 +190,11 @@
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Domain/Chair.Domain.csproj": {
+                "projectPath": "/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Domain/Chair.Domain.csproj"
+              }
+            }
           }
         },
         "warningProperties": {

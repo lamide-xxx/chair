@@ -10,9 +10,7 @@
 /Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Api/bin/Debug/net8.0/Swashbuckle.AspNetCore.Swagger.dll
 /Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Api/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Api/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerUI.dll
-/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Api/bin/Debug/net8.0/Chair.Core.dll
 /Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Api/bin/Debug/net8.0/Chair.Infrastructure.dll
-/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Api/bin/Debug/net8.0/Chair.Core.pdb
 /Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Api/bin/Debug/net8.0/Chair.Infrastructure.pdb
 /Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Api/obj/Debug/net8.0/Chair.Api.csproj.AssemblyReference.cache
 /Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Api/obj/Debug/net8.0/Chair.Api.GeneratedMSBuildEditorConfig.editorconfig
@@ -35,3 +33,5 @@
 /Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Api/obj/Debug/net8.0/Chair.Api.pdb
 /Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Api/obj/Debug/net8.0/Chair.Api.genruntimeconfig.cache
 /Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Api/obj/Debug/net8.0/ref/Chair.Api.dll
+/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Api/bin/Debug/net8.0/Chair.Domain.dll
+/Users/olamide.abegunde/Documents/Projects/Portfolio/chair/backend/Chair.Api/bin/Debug/net8.0/Chair.Domain.pdb
