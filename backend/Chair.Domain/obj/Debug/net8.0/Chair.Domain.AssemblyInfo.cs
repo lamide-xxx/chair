@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Chair.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+649568c5c055fa3398391f3e4096bac789ec45b9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+68939abce1fb62e43103792c25d2a7e7fe9e64de")]
 [assembly: System.Reflection.AssemblyProductAttribute("Chair.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Chair.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
