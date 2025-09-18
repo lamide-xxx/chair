@@ -20,17 +20,17 @@ public class AppDbContext : DbContext
             .HasKey(a => a.Id);
 
         modelBuilder.Entity<Appointment>()
-            .HasOne<User>()
+            .HasOne(a => a.User)
             .WithMany()
             .HasForeignKey(a => a.UserId);
         
         modelBuilder.Entity<Appointment>()
-            .HasOne<Stylist>()
+            .HasOne(a => a.Stylist)
             .WithMany()
             .HasForeignKey(a => a.StylistId);
         
         modelBuilder.Entity<Appointment>()
-            .HasOne<Service>()
+            .HasOne(a => a.Service)
             .WithMany()
             .HasForeignKey(a => a.ServiceId);
         

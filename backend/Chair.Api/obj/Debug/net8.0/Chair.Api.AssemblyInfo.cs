@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Chair.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e82f4a09d8ff957bfee1b5605239c57ad35fd13")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8876ec66b0c9e25aa4ed0f2873fec937ce99b83e")]
 [assembly: System.Reflection.AssemblyProductAttribute("Chair.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Chair.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

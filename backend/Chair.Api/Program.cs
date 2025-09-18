@@ -18,7 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IStylistRepository, StylistRepository>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
-builder.Services.AddSingleton<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 
 //3. Build the app.
 var app = builder.Build();

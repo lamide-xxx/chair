@@ -4,9 +4,9 @@ namespace Chair.Domain.Repositories;
 
 public interface IAppointmentRepository
 {
-    Appointment AddAppointment(Appointment appointment);
-    IEnumerable<Appointment> GetAllAppointments();
-    Appointment? GetAppointmentById(Guid id);
-    void UpdateAppointment(Appointment appointment);
-    void DeleteAppointment(Guid id);
+    Task<Appointment> AddAppointmentAsync(Appointment appointment);
+    Task<IEnumerable<Appointment>> GetAllAppointmentsAsync();
+    Task<Appointment?> GetAppointmentByIdAsync(Guid id);
+    Task<Appointment?> UpdateAppointmentAsync(Appointment appointment);
+    Task<bool> DeleteAppointmentAsync(Guid id);
 }

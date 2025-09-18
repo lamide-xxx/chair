@@ -1,43 +1,75 @@
 using Chair.Domain.Entities;
 using Chair.Domain.Repositories;
+using Chair.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chair.Infrastructure.Repositories;
 
 public class AppointmentRepository : IAppointmentRepository
 {
-    private readonly List<Appointment> _appointments = new();
+    private readonly AppDbContext _context;
     
-    public Appointment AddAppointment(Appointment appointment)
+    public AppointmentRepository(AppDbContext context)
     {
-        _appointments.Add(appointment);
+        _context = context;
+    }
+    
+    public async Task<Appointment> AddAppointmentAsync(Appointment appointment)
+    {
+        appointment.Id = Guid.NewGuid();
+        appointment.StartTime = appointment.StartTime.ToUniversalTime();
+        appointment.EndTime = appointment.EndTime.ToUniversalTime();
+        await _context.Appointments.AddAsync(appointment);
+        await _context.SaveChangesAsync();
         return appointment;
     }
 
-    public IEnumerable<Appointment> GetAllAppointments()
+    public async Task<IEnumerable<Appointment>> GetAllAppointmentsAsync()
     {
-        return _appointments;
+        return await _context.Appointments
+            .Include(a => a.User)
+            .Include(a => a.Stylist)
+            .Include(a => a.Service)
+            .ToListAsync();
     }
 
-    public Appointment? GetAppointmentById(Guid id)
+    public async Task<Appointment?> GetAppointmentByIdAsync(Guid id)
     {
-        return _appointments.FirstOrDefault(a => a.Id == id);
+        return await _context.Appointments
+            .Include(a => a.User)
+            .Include(a => a.Stylist)
+            .Include(a => a.Service)
+            .FirstOrDefaultAsync(a => a.Id == id);
     }
 
-    public void UpdateAppointment(Appointment appointment)
+    public async Task<Appointment?> UpdateAppointmentAsync(Appointment appointment)
     {
-        var index = _appointments.FindIndex(a => a.Id == appointment.Id);
-        if (index != -1)
+        var existingAppointment = await GetAppointmentByIdAsync(appointment.Id);
+        if (existingAppointment == null)
         {
-            _appointments[index] = appointment;
+            return null;
         }
+        
+        existingAppointment.UserId = appointment.UserId;
+        existingAppointment.StylistId = appointment.StylistId;
+        existingAppointment.ServiceId = appointment.ServiceId;
+        existingAppointment.StartTime = appointment.StartTime;
+        existingAppointment.EndTime = appointment.EndTime;
+        existingAppointment.Status = appointment.Status;
+        _context.Appointments.Update(existingAppointment);
+        await _context.SaveChangesAsync();
+        return await GetAppointmentByIdAsync(appointment.Id);
     }
 
-    public void DeleteAppointment(Guid id)
+    public async Task<bool> DeleteAppointmentAsync(Guid id)
     {
-        var appointment = GetAppointmentById(id);
-        if (appointment != null)
+        var appointment = await GetAppointmentByIdAsync(id);
+        if (appointment == null)
         {
-            _appointments.Remove(appointment);
+            return false;
         }
+        _context.Appointments.Remove(appointment);
+        await _context.SaveChangesAsync();
+        return true;
     }
 }

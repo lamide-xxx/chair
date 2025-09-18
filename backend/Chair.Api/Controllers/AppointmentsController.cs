@@ -28,9 +28,9 @@ public class AppointmentsController : ControllerBase
     }
     
     [HttpGet]
-    public IActionResult GetAllAppointments()
+    public async Task<ActionResult<IEnumerable<Appointment>>> GetAllAppointments()
     {
-        var appointments = _appointmentRepository.GetAllAppointments();
+        var appointments = await _appointmentRepository.GetAllAppointmentsAsync();
         
         var appointmentDtos = appointments.Select(async appointment =>
         {
@@ -68,7 +68,7 @@ public class AppointmentsController : ControllerBase
     [HttpGet("{id}")]
     public async Task <ActionResult<Appointment>> GetAppointmentById(Guid id)
     {
-        var appointment = _appointmentRepository.GetAppointmentById(id);
+        var appointment = await _appointmentRepository.GetAppointmentByIdAsync(id);
         if (appointment == null)
         {
             return NotFound();
@@ -126,14 +126,14 @@ public class AppointmentsController : ControllerBase
             return BadRequest($"Stylist {appointment.StylistId} does not exist.");
         }
         
-        var _createdAppointment = _appointmentRepository.AddAppointment(appointment);
-        return CreatedAtAction(nameof(GetAppointmentById), new { id = _createdAppointment.Id }, _createdAppointment);
+        var createdAppointment = await _appointmentRepository.AddAppointmentAsync(appointment);
+        return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointment.Id }, createdAppointment);
     }
 
     [HttpPut("{id}")]
     public IActionResult UpdateAppointment(Guid id, [FromBody] Appointment updatedAppointment)
     {
-        var existingAppointment = _appointmentRepository.GetAppointmentById(id);
+        var existingAppointment = _appointmentRepository.GetAppointmentByIdAsync(id);
         if (existingAppointment == null)
         {
             return NotFound();
@@ -143,19 +143,19 @@ public class AppointmentsController : ControllerBase
         {
             return BadRequest("ID in the URL must match ID in the body.");
         }
-        _appointmentRepository.UpdateAppointment(updatedAppointment);
+        _appointmentRepository.UpdateAppointmentAsync(updatedAppointment);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public IActionResult DeleteAppointment(Guid id)
     {
-        var existingAppointment = _appointmentRepository.GetAppointmentById(id);
+        var existingAppointment = _appointmentRepository.GetAppointmentByIdAsync(id);
         if (existingAppointment == null)
         {
             return NotFound();
         }
-        _appointmentRepository.DeleteAppointment(id);
+        _appointmentRepository.DeleteAppointmentAsync(id);
         return NoContent();
     }
 }
