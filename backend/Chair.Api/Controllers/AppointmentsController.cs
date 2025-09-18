@@ -32,11 +32,11 @@ public class AppointmentsController : ControllerBase
     {
         var appointments = _appointmentRepository.GetAllAppointments();
         
-        var appointmentDtos = appointments.Select(appointment =>
+        var appointmentDtos = appointments.Select(async appointment =>
         {
             var user = _userRepository.GetUserById(appointment.UserId);
             var stylist = _stylistRepository.GetStylistById(appointment.StylistId);
-            var service = _serviceRepository.GetServiceById(appointment.ServiceId);
+            var service = await _serviceRepository.GetServiceByIdAsync(appointment.ServiceId);
             
             return new AppointmentDto()
             {
@@ -66,7 +66,7 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetAppointmentById(Guid id)
+    public async Task <ActionResult<Appointment>> GetAppointmentById(Guid id)
     {
         var appointment = _appointmentRepository.GetAppointmentById(id);
         if (appointment == null)
@@ -76,7 +76,7 @@ public class AppointmentsController : ControllerBase
         
         var user = _userRepository.GetUserById(appointment.UserId);
         var stylist = _stylistRepository.GetStylistById(appointment.StylistId);
-        var service = _serviceRepository.GetServiceById(appointment.ServiceId);
+        var service = await _serviceRepository.GetServiceByIdAsync(appointment.ServiceId);
 
         var appointmentDto = new AppointmentDto()
         {
@@ -106,7 +106,7 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult CreateAppointment([FromBody] Appointment appointment)
+    public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] Appointment appointment)
     {
         var user = _userRepository.GetUserById(appointment.UserId);
         if (user == null)
@@ -114,7 +114,7 @@ public class AppointmentsController : ControllerBase
             return BadRequest($"User {appointment.UserId} does not exist.");
         }
         
-        var service = _serviceRepository.GetServiceById(appointment.ServiceId);
+        var service = await _serviceRepository.GetServiceByIdAsync(appointment.ServiceId);
         if (service == null)
         {
             return BadRequest($"Service {appointment.ServiceId} does not exist.");

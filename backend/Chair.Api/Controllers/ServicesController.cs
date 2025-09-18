@@ -16,23 +16,23 @@ public class ServicesController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult CreateService([FromBody] Service service)
+    public async Task<ActionResult<Service>> CreateService([FromBody] Service service)
     {
-        var createdService = _serviceRepository.AddService(service);
+        var createdService = await _serviceRepository.AddServiceAsync(service);
         return CreatedAtAction(nameof(GetAllServices), new { id = createdService.Id }, createdService);
     }
 
     [HttpGet]
-    public IActionResult GetAllServices()
+    public async Task<ActionResult<IEnumerable<Service>>> GetAllServices()
     {
-        var _services = _serviceRepository.GetAllServices();
-        return Ok(_services);
+        var services = await _serviceRepository.GetAllServicesAsync();
+        return Ok(services);
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetServiceById(Guid id)
+    public async Task<ActionResult<Service>> GetServiceById(Guid id)
     {
-        var service = _serviceRepository.GetServiceById(id);
+        var service = await _serviceRepository.GetServiceByIdAsync(id);
         if (service == null)
         {
             return NotFound();

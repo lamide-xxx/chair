@@ -1,25 +1,34 @@
 using Chair.Domain.Entities;
 using Chair.Domain.Repositories;
+using Chair.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chair.Infrastructure.Repositories;
 
 public class ServiceRepository : IServiceRepository
 {
-    private readonly List<Service> _services = new();
+    private readonly AppDbContext _context;
     
-    public Service AddService(Service service)
+    public ServiceRepository(AppDbContext context)
     {
-        _services.Add(service);
+        _context = context;
+    }
+    
+    public async Task<Service> AddServiceAsync(Service service)
+    {
+        service.Id = Guid.NewGuid();
+        await _context.Services.AddAsync(service);
+        await _context.SaveChangesAsync();
         return service;
     }
     
-    public IEnumerable<Service> GetAllServices()
+    public async Task<IEnumerable<Service>> GetAllServicesAsync()
     {
-        return _services;
+        return await _context.Services.ToListAsync();
     }
     
-    public Service? GetServiceById(Guid id)
+    public async Task<Service?> GetServiceByIdAsync(Guid id)
     {
-        return _services.FirstOrDefault(s => s.Id == id);
+        return await _context.Services.FindAsync(id);
     }
 }

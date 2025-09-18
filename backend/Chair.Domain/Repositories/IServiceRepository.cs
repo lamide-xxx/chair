@@ -4,7 +4,7 @@ namespace Chair.Domain.Repositories;
 
 public interface IServiceRepository
 {
-    Service? GetServiceById(Guid id);
-    IEnumerable<Service> GetAllServices();
-    Service AddService(Service service);
+    Task<Service?> GetServiceByIdAsync(Guid id);
+    Task<IEnumerable<Service>> GetAllServicesAsync();
+    Task<Service> AddServiceAsync(Service service);
 }
