@@ -4,7 +4,7 @@ namespace Chair.Domain.Repositories;
 
 public interface IStylistRepository
 {
-    Stylist AddStylist(Stylist stylist);
-    IEnumerable<Stylist> GetAllStylists();
-    Stylist? GetStylistById(Guid id);
+    Task<Stylist> AddStylistAsync(Stylist stylist);
+    Task<IEnumerable<Stylist>> GetAllStylistsAsync();
+    Task<Stylist?> GetStylistByIdAsync(Guid id);
 }

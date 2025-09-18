@@ -17,23 +17,23 @@ public class StylistsController : ControllerBase
     }
     
     [HttpPost]
-    public IActionResult CreateStylist([FromBody] Stylist stylist)
+    public async Task<ActionResult<Stylist>> CreateStylist([FromBody] Stylist stylist)
     {
-        var createdStylist = _stylistRepository.AddStylist(stylist);
+        var createdStylist = await _stylistRepository.AddStylistAsync(stylist);
         return CreatedAtAction(nameof(GetAllStylists), new { id = createdStylist.Id }, createdStylist);
     }
 
     [HttpGet]
-    public IActionResult GetAllStylists()
+    public async Task<ActionResult<Stylist>> GetAllStylists()
     {
-        var stylists = _stylistRepository.GetAllStylists();
+        var stylists = await _stylistRepository.GetAllStylistsAsync();
         return Ok(stylists);
     }
     
     [HttpGet("{id}")]
-    public IActionResult GetStylistsById(Guid id)
+    public async Task<ActionResult<Stylist>> GetStylistsById(Guid id)
     {
-        var stylist = _stylistRepository.GetStylistById(id);
+        var stylist = await _stylistRepository.GetStylistByIdAsync(id);
         if (stylist == null)
         {
             return NotFound();

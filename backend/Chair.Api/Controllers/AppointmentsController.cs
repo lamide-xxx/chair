@@ -35,7 +35,7 @@ public class AppointmentsController : ControllerBase
         var appointmentDtos = appointments.Select(async appointment =>
         {
             var user = await _userRepository.GetUserByIdAsync(appointment.UserId);
-            var stylist = _stylistRepository.GetStylistById(appointment.StylistId);
+            var stylist = await _stylistRepository.GetStylistByIdAsync(appointment.StylistId);
             var service = await _serviceRepository.GetServiceByIdAsync(appointment.ServiceId);
             
             return new AppointmentDto()
@@ -75,7 +75,7 @@ public class AppointmentsController : ControllerBase
         }
         
         var user = await _userRepository.GetUserByIdAsync(appointment.UserId);
-        var stylist = _stylistRepository.GetStylistById(appointment.StylistId);
+        var stylist = await _stylistRepository.GetStylistByIdAsync(appointment.StylistId);
         var service = await _serviceRepository.GetServiceByIdAsync(appointment.ServiceId);
 
         var appointmentDto = new AppointmentDto()
@@ -120,7 +120,7 @@ public class AppointmentsController : ControllerBase
             return BadRequest($"Service {appointment.ServiceId} does not exist.");
         }
         
-        var stylist = _stylistRepository.GetStylistById(appointment.StylistId);
+        var stylist = await _stylistRepository.GetStylistByIdAsync(appointment.StylistId);
         if (stylist == null)
         {
             return BadRequest($"Stylist {appointment.StylistId} does not exist.");

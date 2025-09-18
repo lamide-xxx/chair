@@ -1,25 +1,34 @@
 using Chair.Domain.Entities;
 using Chair.Domain.Repositories;
+using Chair.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chair.Infrastructure.Repositories;
 
 public class StylistRepository : IStylistRepository
 {
-    private readonly List<Stylist> _stylists = new();
+    private readonly AppDbContext _context;
     
-    public Stylist AddStylist(Stylist stylist)
+    public StylistRepository(AppDbContext context)
     {
-        _stylists.Add(stylist);
+        _context = context;
+    }
+    
+    public async Task<Stylist> AddStylistAsync(Stylist stylist)
+    {
+        stylist.Id = Guid.NewGuid();
+        await _context.Stylists.AddAsync(stylist);
+        await _context.SaveChangesAsync();
         return stylist;
     }
 
-    public IEnumerable<Stylist> GetAllStylists()
+    public async Task<IEnumerable<Stylist>> GetAllStylistsAsync()
     {
-        return _stylists;
+        return await _context.Stylists.ToListAsync();
     }
     
-    public Stylist? GetStylistById(Guid id)
+    public async Task<Stylist?> GetStylistByIdAsync(Guid id)
     {
-        return _stylists.FirstOrDefault(s => s.Id == id);
+        return await _context.Stylists.FindAsync(id);
     }
 }
