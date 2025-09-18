@@ -1,5 +1,7 @@
 using Chair.Domain.Repositories;
+using Chair.Infrastructure.Persistence;
 using Chair.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 //2. Register application services.
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IStylistRepository, StylistRepository>();
 builder.Services.AddSingleton<IServiceRepository, ServiceRepository>();
