@@ -16,16 +16,16 @@ public class UsersController : ControllerBase
     }
     
     [HttpPost]
-    public IActionResult CreateUser([FromBody] User user)
+    public async Task<ActionResult<User>> CreateUser([FromBody] User user)
     {
-        var createdUser = _userRepository.AddUser(user);
+        var createdUser = await _userRepository.AddUserAsync(user);
         return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetUserById(Guid id)
+    public async Task <ActionResult<User>> GetUserById(Guid id)
     {
-        var user = _userRepository.GetUserById(id);
+        var user = await _userRepository.GetUserByIdAsync(id);
         if (user == null)
         {
             return NotFound();

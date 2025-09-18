@@ -15,7 +15,7 @@ builder.Services.AddControllers();
 
 //2. Register application services.
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddSingleton<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IStylistRepository, StylistRepository>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddSingleton<IAppointmentRepository, AppointmentRepository>();

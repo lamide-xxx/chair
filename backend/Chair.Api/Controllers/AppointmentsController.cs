@@ -34,7 +34,7 @@ public class AppointmentsController : ControllerBase
         
         var appointmentDtos = appointments.Select(async appointment =>
         {
-            var user = _userRepository.GetUserById(appointment.UserId);
+            var user = await _userRepository.GetUserByIdAsync(appointment.UserId);
             var stylist = _stylistRepository.GetStylistById(appointment.StylistId);
             var service = await _serviceRepository.GetServiceByIdAsync(appointment.ServiceId);
             
@@ -74,7 +74,7 @@ public class AppointmentsController : ControllerBase
             return NotFound();
         }
         
-        var user = _userRepository.GetUserById(appointment.UserId);
+        var user = await _userRepository.GetUserByIdAsync(appointment.UserId);
         var stylist = _stylistRepository.GetStylistById(appointment.StylistId);
         var service = await _serviceRepository.GetServiceByIdAsync(appointment.ServiceId);
 
@@ -108,7 +108,7 @@ public class AppointmentsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] Appointment appointment)
     {
-        var user = _userRepository.GetUserById(appointment.UserId);
+        var user = await _userRepository.GetUserByIdAsync(appointment.UserId);
         if (user == null)
         {
             return BadRequest($"User {appointment.UserId} does not exist.");
