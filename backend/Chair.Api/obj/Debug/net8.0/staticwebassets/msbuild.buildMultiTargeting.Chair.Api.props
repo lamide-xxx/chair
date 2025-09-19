@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/Chair.Api.props" />
-</Project>
