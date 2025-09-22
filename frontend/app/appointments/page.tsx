@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface Stylist {id: number; fullName: string;}
 interface Service {id: number; name: string; date: string; price: string;}
@@ -104,8 +104,9 @@ export default function AppointmentsPage(){
                 </div>
 
                 <div>
-                    <label className={"block mb-1"}>Date & Time</label>
+                    <label htmlFor="date" className={"block mb-1"}>Date & Time</label>
                     <input
+                        id={"date"}
                         type="datetime-local"
                         className={"border p-2 rounded w-full"}
                         value={date}
