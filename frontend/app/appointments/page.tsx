@@ -1,14 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useSearchParams} from "next/navigation";
 
 interface Stylist {id: number; fullName: string;}
-interface Service {id: number; name: string; date: string; price: string;}
+interface Service {id: number; name: string; duration: number; price: string;}
 
 export default function AppointmentsPage(){
+    const searchParams = useSearchParams();
+    const queryStylistId = searchParams.get("stylistId") || "";
     const [services, setServices] = useState<Service[]>([]);
     const [stylists, setStylists] = useState<Stylist[]>([]);
     const [serviceId, setServiceId] = useState<string>("");
-    const [stylistId, setStylistId] = useState<string>("");
+    const [stylistId, setStylistId] = useState<string>(queryStylistId);
     const [date, setDate] = useState<string>("");
     const [loading, setLoading] = useState(true);
     
@@ -28,8 +31,15 @@ export default function AppointmentsPage(){
                 setLoading(false);
             }
         }
+        
         fetchData();
     }, []);
+    
+    useEffect(()=>{
+        if (queryStylistId) {
+            setStylistId(queryStylistId);
+        }
+    }, [queryStylistId])
     
     async function handleSubmit(e: React.FormEvent){
         e.preventDefault();
@@ -75,7 +85,7 @@ export default function AppointmentsPage(){
                         value={serviceId}
                         onChange={(e)=>setServiceId(e.target.value)}
                     >
-                        <option>Select a Service</option>
+                        <option value={""}>Select a Service</option>
                         {services.map((service: Service) =>(
                             <option key={service.id} value={service.id}>{service.name}</option>
                             )
@@ -95,7 +105,7 @@ export default function AppointmentsPage(){
                         value={stylistId}
                         onChange={(e)=>setStylistId(e.target.value)}
                     >
-                        <option>Select a Stylist</option>
+                        <option value={""}>Select a Stylist</option>
                         {stylists.map((stylist: Stylist) =>(
                                 <option key={stylist.id} value={stylist.id}>{stylist.fullName}</option>
                             )
