@@ -1,11 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useSearchParams} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 
 interface Stylist {id: number; fullName: string;}
 interface Service {id: number; name: string; duration: number; price: string;}
 
 export default function AppointmentsPage(){
+    const router = useRouter();
     const searchParams = useSearchParams();
     const queryStylistId = searchParams.get("stylistId") || "";
     const [services, setServices] = useState<Service[]>([]);
@@ -56,9 +57,12 @@ export default function AppointmentsPage(){
                     status: 0
                 }),
             });
+            
             if (!response.ok) {
                 throw new Error(`HTTP error creating appointment! status: ${response.status}; message: ${response.statusText}, body: ${await response.text()}`);
             }
+            
+            router.push("/appointments/success");
             alert("Appointment created successfully!");
         }catch (err){
             console.error('Error creating appointment:', err);
