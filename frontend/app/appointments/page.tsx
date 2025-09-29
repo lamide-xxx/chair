@@ -8,10 +8,13 @@ interface Service {id: number; name: string; duration: number; price: string;}
 export default function AppointmentsPage(){
     const router = useRouter();
     const searchParams = useSearchParams();
+    
     const queryStylistId = searchParams.get("stylistId") || "";
+    const queryServiceId = searchParams.get("serviceId") || "";
+    
     const [services, setServices] = useState<Service[]>([]);
     const [stylists, setStylists] = useState<Stylist[]>([]);
-    const [serviceId, setServiceId] = useState<string>("");
+    const [serviceId, setServiceId] = useState<string>(queryServiceId);
     const [stylistId, setStylistId] = useState<string>(queryStylistId);
     const [date, setDate] = useState<string>("");
     const [loading, setLoading] = useState(true);
@@ -20,12 +23,10 @@ export default function AppointmentsPage(){
         async function fetchData(){
             try{
                 const servicesResponse = await fetch("http://localhost:5170/api/services/");
-                const servicesData: Service[] = await servicesResponse.json();
-                setServices(servicesData);
+                setServices(await servicesResponse.json());
                 
                 const stylistsResponse = await fetch("http://localhost:5170/api/stylists/");
-                const stylistsData: Stylist[] = await stylistsResponse.json();
-                setStylists(stylistsData);
+                setStylists(await stylistsResponse.json());
             }catch (err){
                 console.error('Error fetching data:', err);
             }finally {
@@ -35,12 +36,6 @@ export default function AppointmentsPage(){
         
         fetchData();
     }, []);
-    
-    useEffect(()=>{
-        if (queryStylistId) {
-            setStylistId(queryStylistId);
-        }
-    }, [queryStylistId])
     
     async function handleSubmit(e: React.FormEvent){
         e.preventDefault();
@@ -63,7 +58,6 @@ export default function AppointmentsPage(){
             }
             
             router.push("/appointments/success");
-            alert("Appointment created successfully!");
         }catch (err){
             console.error('Error creating appointment:', err);
             alert("Error creating appointment");
@@ -71,67 +65,73 @@ export default function AppointmentsPage(){
     }
     
     if(loading){
-        return <p>Loading Appointments...</p>;
+        return <p className="p-8 text-gray-500">Loading Appointments...</p>;
     }
     return (
-        <div className={"p-8"}>
-            <h1 className={"text-3xl font-bold mb-6"}>Book an Appointment</h1>
-            <form onSubmit={handleSubmit} className={"space-y-4"}>
-                <div>
-                    <label
-                        htmlFor="services"
-                        className={"block mb-1"}
-                    >
-                        Service</label>
-                    <select
-                        id="services"
-                        className={"border p-2 rounded w-full"}
-                        value={serviceId}
-                        onChange={(e)=>setServiceId(e.target.value)}
-                    >
-                        <option value={""}>Select a Service</option>
-                        {services.map((service: Service) =>(
-                            <option key={service.id} value={service.id}>{service.name}</option>
-                            )
-                        )}
-                    </select>
-                </div>
-
-                <div>
-                    <label
-                        htmlFor="stylists"
-                        className={"block"}
-                    >
-                        Stylist</label>
-                    <select
-                        id="stylists"
-                        className={"border p-2 rounded w-full"}
-                        value={stylistId}
-                        onChange={(e)=>setStylistId(e.target.value)}
-                    >
-                        <option value={""}>Select a Stylist</option>
-                        {stylists.map((stylist: Stylist) =>(
-                                <option key={stylist.id} value={stylist.id}>{stylist.fullName}</option>
-                            )
-                        )}
-                    </select>
-                </div>
-
-                <div>
-                    <label htmlFor="date" className={"block mb-1"}>Date & Time</label>
-                    <input
-                        id={"date"}
-                        type="datetime-local"
-                        className={"border p-2 rounded w-full"}
-                        value={date}
-                        onChange={(e)=>setDate(e.target.value)}
-                        />
-                </div>
-                
-                <button type="submit" className={"bg-blue-500 text-white px-4 py-2 rounded"}>
-                    Book
-                </button>
-            </form>
+        <div className={"bg-gray-50 min-h-screen py-12 px-4"}>
+            <div className={"max-w-lg mx-auto bg-white shadow rounded-lg p-8"}>
+                <h1 className={"text-3xl font-extrabold mb-6 text-gray-800"}>Book an Appointment</h1>
+                <form onSubmit={handleSubmit} className={"space-y-5"}>
+                    <div>
+                        <label
+                            htmlFor="services"
+                            className={"block text-gray-700 font-semibold mb-2"}
+                        >
+                            Service</label>
+                        <select
+                            id="services"
+                            className={"w-full border p-2 rounded-lg"}
+                            value={serviceId}
+                            onChange={(e)=>setServiceId(e.target.value)}
+                        >
+                            <option value={""}>Select a Service</option>
+                            {services.map((service: Service) =>(
+                                <option key={service.id} value={service.id}>
+                                    {service.name} - £{service.price}
+                                </option>
+                                )
+                            )}
+                        </select>
+                    </div>
+    
+                    <div>
+                        <label
+                            htmlFor="stylists"
+                            className={"block text-gray-700 font-semibold mb-2"}
+                        >
+                            Stylist</label>
+                        <select
+                            id="stylists"
+                            className={"border p-2 rounded-lg w-full"}
+                            value={stylistId}
+                            onChange={(e)=>setStylistId(e.target.value)}
+                        >
+                            <option value={""}>Select a Stylist</option>
+                            {stylists.map((stylist: Stylist) =>(
+                                    <option key={stylist.id} value={stylist.id}>
+                                        {stylist.fullName}
+                                    </option>
+                                )
+                            )}
+                        </select>
+                    </div>
+    
+                    <div>
+                        <label htmlFor="date" className={"block text-gray-700 font-semibold mb-2"}>Date & Time</label>
+                        <input
+                            id={"date"}
+                            type="datetime-local"
+                            className={"border p-2 rounded-lg w-full"}
+                            value={date}
+                            onChange={(e)=>setDate(e.target.value)}
+                            />
+                    </div>
+                    
+                    <button type="submit" className={"w-full bg-blue-500 text-white px-4 py-3 rounded-lg font-semibold hover:bg-blue-600 transitio"}>
+                        Confirm Booking
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }

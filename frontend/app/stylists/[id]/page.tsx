@@ -86,7 +86,7 @@ export default function StylistProfilePage(){
                                 </div>
                                 <button
                                     className={"mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"}
-                                    onClick={() => router.push(`/appointments?stylistId=${params.id}`)}
+                                    onClick={() => router.push(`/appointments?stylistId=${params.id}&serviceId=${service.id}`)}
                                 >
                                     Book Appointment
                                 </button>
