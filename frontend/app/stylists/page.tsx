@@ -9,6 +9,7 @@ interface Stylist {
   rating: number;
   location: string;
   serviceIds: string[];
+  imageUrl?: string;
 }
 
 export default function StylistsPage() {
@@ -35,21 +36,55 @@ export default function StylistsPage() {
         return <p>Loading Stylists...</p>;
     }
     return(
-        <div className={"p-8"}>
-            <h1 className={"text-3xl font-bold mb-6"}>Stylists</h1>
-            <ul className={"grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"}>
-                {stylists.map((stylist) => (
-                    <li key={stylist.id}>
-                        <h2 className={"text-xl font-semibold"}>{stylist.fullName}</h2>
-                        <p className={"text-gray-600"}>Location: {stylist.location}</p>
-                        <p className={"text-gray-600"}>Rating: {stylist.rating} / 5</p>
-                        <p className={"text-gray-500"}>Specialties: {stylist.specialties.join(", ")}</p>
-                        <Link
-                            href={`stylists/${stylist.id}`}
-                            className={"mt-3 inline-block text-blue-600 hover:underline"}
-                        >
-                            View Profile
-                        </Link>
+        <div className="p-8">
+            <h1 className="text-3xl font-bold mb-6">Stylists</h1>
+            <ul className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {stylists.map((stylist, idx) => (
+                    <li
+                        key={stylist.id}
+                        className="bg-white rounded-lg shadow overflow-hidden flex flex-col"
+                    >
+                        {/* Image */}
+                        <div className="h-48 w-full bg-gray-200">
+                            <img
+                                src={
+                                    stylist.imageUrl ||
+                                    `https://source.unsplash.com/400x300/?hair`
+                                }
+                                alt={stylist.fullName}
+                                className="h-full w-full object-cover"
+                            />
+                        </div>
+
+                        {/* Info */}
+                        <div className="p-6 flex flex-col justify-between flex-grow">
+                            <div>
+                                <h2 className="text-xl font-semibold mb-2">
+                                    {stylist.fullName}
+                                </h2>
+                                <p className="text-gray-600 mb-1">📍 {stylist.location}</p>
+                                <p className="text-gray-600 mb-1">⭐ {stylist.rating} / 5</p>
+                                <p className="text-gray-500">
+                                    {stylist.specialties.length > 0 ? `Specialties: ${stylist.specialties.join(", ")}` : "No specialties listed"}
+                                </p>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="mt-4 flex space-x-3">
+                                <Link
+                                    href={`/appointments?stylistId=${stylist.id}`}
+                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                                >
+                                    Book
+                                </Link>
+                                <Link
+                                    href={`/stylists/${stylist.id}`}
+                                    className="text-blue-600 hover:underline self-center"
+                                >
+                                    View Profile
+                                </Link>
+                            </div>
+                        </div>
                     </li>
                 ))}
             </ul>
