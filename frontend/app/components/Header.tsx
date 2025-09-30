@@ -7,7 +7,8 @@ export default function Header() {
                 <Link href={"/"}>Chair</Link>
             </h1>
             <nav className="space-x-4">
-                <Link href={"/appointments"} className={"hover:underline"}>Appointments</Link>
+                <Link href={"/appointments"} className={"hover:underline"}>Book</Link>
+                <Link href={"/appointments/my"} className={"hover:underline"}>My Appointments</Link>
                 <Link href={"/stylists"} className={"hover:underline"}>Stylists</Link>
             </nav>
         </header>
