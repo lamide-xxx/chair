@@ -49,7 +49,7 @@ export default function StylistsPage() {
                             <img
                                 src={
                                     stylist.imageUrl ||
-                                    `https://source.unsplash.com/400x300/?hair`
+                                    `https://picsum.photos/400/300?random=${idx + 1}`
                                 }
                                 alt={stylist.fullName}
                                 className="h-full w-full object-cover"
