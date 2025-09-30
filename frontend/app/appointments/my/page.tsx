@@ -75,6 +75,16 @@ export default function MyAppointmentsPage(){
     function getStylistName(id: number) {
         return stylists.find((s) => s.id === id)?.fullName || "Unknown Stylist";
     }
+
+    function getStatusText(status: number) {
+        switch (status) {
+            case 0: return "Pending";
+            case 1: return "Confirmed";
+            case 2: return "Completed";
+            case 3: return "Cancelled";
+            default: return "Unknown";
+        }
+    }
     
     if (loading){
         return <p className={"p-8 text-gray-500"}>Loading Appointments...</p>;
@@ -100,7 +110,7 @@ export default function MyAppointmentsPage(){
                             <p className="text-gray-600">
                                 Time: {new Date(appt.startTime).toLocaleString()}
                             </p>
-                            <p className="text-gray-500">Status: {appt.status}</p>
+                            <p className="text-gray-500">Status: {getStatusText(appt.status)}</p>
                         </li>
                     ))}
                 </ul>

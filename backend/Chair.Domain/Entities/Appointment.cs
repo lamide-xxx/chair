@@ -9,7 +9,7 @@ public class Appointment
     public Guid ServiceId { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
-    public AppointmentStatus Status { get; set; } = AppointmentStatus.Scheduled;
+    public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
     
     // Navigation properties — EF Core uses these for Include()
     public User? User { get; set; }
@@ -18,8 +18,10 @@ public class Appointment
 
     public enum AppointmentStatus
     {
-        Scheduled,
+        Pending,
+        Confirmed,
         Completed,
-        Cancelled
+        Cancelled,
+        Unknown
     }
 }
