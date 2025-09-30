@@ -32,30 +32,26 @@ public class AppointmentsController : ControllerBase
     {
         var appointments = await _appointmentRepository.GetAllAppointmentsAsync();
         
-        var appointmentDtos = appointments.Select(async appointment =>
+        var appointmentDtos = appointments.Select( appointment =>
         {
-            var user = await _userRepository.GetUserByIdAsync(appointment.UserId);
-            var stylist = await _stylistRepository.GetStylistByIdAsync(appointment.StylistId);
-            var service = await _serviceRepository.GetServiceByIdAsync(appointment.ServiceId);
-            
             return new AppointmentDto()
             {
                 Id = appointment.Id,
                 User = new UserDto
                 {
-                    Id = user.Id,
-                    FullName = user.FullName
+                    Id = appointment.User.Id,
+                    FullName = appointment.User.FullName
                 },
                 Stylist = new StylistDto
                 {
-                    Id = stylist.Id,
-                    FullName = stylist.FullName
+                    Id = appointment.Stylist.Id,
+                    FullName = appointment.Stylist.FullName
                 },
                 Service = new ServiceDto
                 {
-                    Id = service.Id,
-                    Name = service.Name,
-                    Price = service.Price
+                    Id = appointment.Service.Id,
+                    Name = appointment.Service.Name,
+                    Price = appointment.Service.Price
                 },
                 StartTime = appointment.StartTime,
                 EndTime = appointment.EndTime,
@@ -73,29 +69,25 @@ public class AppointmentsController : ControllerBase
         {
             return NotFound();
         }
-        
-        var user = await _userRepository.GetUserByIdAsync(appointment.UserId);
-        var stylist = await _stylistRepository.GetStylistByIdAsync(appointment.StylistId);
-        var service = await _serviceRepository.GetServiceByIdAsync(appointment.ServiceId);
 
         var appointmentDto = new AppointmentDto()
         {
             Id = appointment.Id,
             User = new UserDto
             {
-                Id = user.Id,
-                FullName = user.FullName
+                Id = appointment.User.Id,
+                FullName = appointment.User.FullName
             },
             Stylist = new StylistDto
             {
-                Id = stylist.Id,
-                FullName = stylist.FullName
+                Id = appointment.Stylist.Id,
+                FullName = appointment.Stylist.FullName
             },
             Service = new ServiceDto
             {
-                Id = service.Id,
-                Name = service.Name,
-                Price = service.Price
+                Id = appointment.Service.Id,
+                Name = appointment.Service.Name,
+                Price = appointment.Service.Price
             },
             StartTime = appointment.StartTime,
             EndTime = appointment.EndTime,
@@ -103,6 +95,51 @@ public class AppointmentsController : ControllerBase
         };
         
         return Ok(appointmentDto);
+    }
+
+    [HttpGet("user/{userId}")]
+    public async Task<ActionResult<IEnumerable<AppointmentDto>>> GetAppoinmentsByUserId(Guid userId)
+    {
+        var user = await _userRepository.GetUserByIdAsync(userId);
+        if (user == null)
+        {
+            return BadRequest($"User {userId} does not exist.");
+        }
+        
+        var appointments = await _appointmentRepository.GetAppointmentsByUserIdAsync(userId);
+        if (!appointments.Any())
+        {
+            return NotFound();
+        }
+        
+        var appointmentDtos = appointments.Select(appointment =>
+        {
+            return new AppointmentDto()
+            {
+                Id = appointment.Id,
+                User = new UserDto
+                {
+                    Id = user.Id,
+                    FullName = user.FullName
+                },
+                Stylist = new StylistDto
+                {
+                    Id = appointment.Stylist.Id,
+                    FullName = appointment.Stylist.FullName
+                },
+                Service = new ServiceDto
+                {
+                    Id = appointment.Service.Id,
+                    Name = appointment.Service.Name,
+                    Price = appointment.Service.Price
+                },
+                StartTime = appointment.StartTime,
+                EndTime = appointment.EndTime,
+                Status = appointment.Status
+            };
+        }).ToList();
+        return Ok(appointmentDtos);
+
     }
 
     [HttpPost]

@@ -33,6 +33,16 @@ public class AppointmentRepository : IAppointmentRepository
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Appointment>> GetAppointmentsByUserIdAsync(Guid userId)
+    {
+        return await _context.Appointments
+            .Include(a => a.User)
+            .Include(a => a.Stylist)
+            .Include(a => a.Service)
+            .Where(a => a.UserId == userId)
+            .ToListAsync();
+    }
+
     public async Task<Appointment?> GetAppointmentByIdAsync(Guid id)
     {
         return await _context.Appointments

@@ -14,7 +14,7 @@ export default function AppointmentSuccessPage(){
                         Back to Stylists
                     </Link>
                     <Link
-                        href="/appointments"
+                        href="/appointments/my"
                         className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition"
                     >
                         View Appointments
