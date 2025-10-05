@@ -7,6 +7,7 @@ COPY *.sln ./
 COPY Chair.Api/Chair.Api.csproj Chair.Api/
 COPY Chair.Domain/Chair.Domain.csproj Chair.Domain/
 COPY Chair.Infrastructure/Chair.Infrastructure.csproj Chair.Infrastructure/
+COPY Chair.Tests/Chair.Tests.csproj Chair.Tests/
 
 # Restore dependencies
 RUN dotnet restore
