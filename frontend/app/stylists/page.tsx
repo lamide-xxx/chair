@@ -75,7 +75,7 @@ export default function StylistsPage() {
     
                                 {/* Book Button */}
                                 <div className="mt-4">
-                                    <span
+                                    <button
                                         onClick={(e) => {
                                             e.preventDefault(); // stop Link navigation
                                             window.location.href = `/appointments?stylistId=${stylist.id}`;
@@ -83,7 +83,7 @@ export default function StylistsPage() {
                                         className="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition cursor-pointer"
                                     >
                                         Book
-                                    </span>
+                                    </button>
                                 </div>
                             </div>
                         </Link>
