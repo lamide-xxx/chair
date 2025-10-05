@@ -15,7 +15,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
         policy  =>
         {
-            policy.WithOrigins("http://localhost:3000") // Adjust the origin as needed;
+            // policy.WithOrigins("http://localhost:3000") // Adjust the origin as needed;
+            policy.AllowAnyOrigin()
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -25,7 +26,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 //2. Register application services.
-builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
+                       ?? builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IStylistRepository, StylistRepository>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
