@@ -54,6 +54,8 @@ export default function MyAppointmentsPage(){
                     stylistsResponse.json()
                 ]);
                 
+                appointmentsData.sort((a:Appointment, b:Appointment) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+                
                 setAppointments(appointmentsData);
                 setServices(servicesData);
                 setStylists(stylistsData);
