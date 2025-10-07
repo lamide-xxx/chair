@@ -19,6 +19,8 @@ interface Service {
 }
 
 export default function StylistProfilePage(){
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    
     const params = useParams();
     const router = useRouter();
     
@@ -29,7 +31,7 @@ export default function StylistProfilePage(){
         async function fetchStylistProfile(){
             try{
                 // fetch stylist details
-                const stylistResponse = await fetch(`http://localhost:5170/api/stylists/${params.id}`);
+                const stylistResponse = await fetch(`${apiBaseUrl}/api/stylists/${params.id}`);
                 if (!stylistResponse.ok) {
                     throw new Error(`HTTP error fetching stylist! status: ${stylistResponse.status}; message: ${stylistResponse.statusText}, body: ${await stylistResponse.text()}`);
                 }
@@ -37,7 +39,7 @@ export default function StylistProfilePage(){
                 setStylist(stylistData);
 
                 // fetch all services
-                const servicesResponse = await fetch("http://localhost:5170/api/services");
+                const servicesResponse = await fetch(`${apiBaseUrl}/api/services`);
                 const servicesData: Service[] = await servicesResponse.json();
                 
                 // filter services to only those offered by this stylist

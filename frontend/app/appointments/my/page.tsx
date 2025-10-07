@@ -22,6 +22,8 @@ interface Stylist {
 }
 
 export default function MyAppointmentsPage(){
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [services, setServices] = useState<Service[]>([]);
     const [stylists, setStylists] = useState<Stylist[]>([]);
@@ -34,9 +36,9 @@ export default function MyAppointmentsPage(){
         async function fetchData(){
             try{
                 const [appointmentsResponse, servicesResponse, stylistsResponse] = await Promise.all([
-                    fetch(`http://localhost:5170/api/appointments/user/${userId}`),
-                    fetch("http://localhost:5170/api/services/"),
-                    fetch("http://localhost:5170/api/stylists/")
+                    fetch(`${apiBaseUrl}/api/appointments/user/${userId}`),
+                    fetch(`${apiBaseUrl}/api/services/`),
+                    fetch(`${apiBaseUrl}/api/stylists/`)
                 ]);
                 
                 if (!appointmentsResponse.ok) {

@@ -13,13 +13,15 @@ interface Stylist {
 }
 
 export default function StylistsPage() {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    
     const [stylists, setStylists] = useState<Stylist[]>([]);
     const [loading, setLoading] = useState(true);
     
     useEffect(() => {
         async function fetchStylists() {
             try {
-                const response = await fetch("http://localhost:5170/api/stylists/");
+                const response = await fetch(`${apiBaseUrl}/api/stylists/`);
                 const data: Stylist[] = await response.json();
                 setStylists(data);
             } catch (error) {

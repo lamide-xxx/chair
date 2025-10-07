@@ -6,6 +6,8 @@ interface Stylist {id: number; fullName: string;}
 interface Service {id: number; name: string; duration: number; price: string;}
 
 export default function AppointmentsPage(){
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    
     const router = useRouter();
     const searchParams = useSearchParams();
     
@@ -22,10 +24,10 @@ export default function AppointmentsPage(){
     useEffect(() =>{
         async function fetchData(){
             try{
-                const servicesResponse = await fetch("http://localhost:5170/api/services/");
+                const servicesResponse = await fetch(`${apiBaseUrl}/api/services/`);
                 setServices(await servicesResponse.json());
                 
-                const stylistsResponse = await fetch("http://localhost:5170/api/stylists/");
+                const stylistsResponse = await fetch(`${apiBaseUrl}/api/stylists/`);
                 setStylists(await stylistsResponse.json());
             }catch (err){
                 console.error('Error fetching data:', err);
@@ -40,7 +42,7 @@ export default function AppointmentsPage(){
     async function handleSubmit(e: React.FormEvent){
         e.preventDefault();
         try{
-            const response = await fetch("http://localhost:5170/api/appointments/", {
+            const response = await fetch(`${apiBaseUrl}/api/appointments/`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({

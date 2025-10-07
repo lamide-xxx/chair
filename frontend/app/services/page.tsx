@@ -8,13 +8,15 @@ interface Service {
     durationMinutes: number;
 }
 export default function ServicesPage(){
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    
     const [services, setServices] = useState<Service[]>([]);
     const [loading, setLoading] = useState(true);
     
     useEffect(() => {
         async function fetchServices(){
             try {
-                const response = await fetch("http://localhost:5170/api/services/");
+                const response = await fetch(`${apiBaseUrl}/api/services/`);
                 const data: Service[] = await response.json();
                 setServices(data);
             } catch (error) {
