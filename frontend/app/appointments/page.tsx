@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import {useRouter, useSearchParams} from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 interface Stylist {id: number; fullName: string;}
 interface Service {id: number; name: string; duration: number; price: string;}
 
