@@ -1,8 +1,10 @@
 using Chair.Domain.Repositories;
 using Chair.Infrastructure.Persistence;
 using Chair.Infrastructure.Repositories;
+using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 
+Env.Load();
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
