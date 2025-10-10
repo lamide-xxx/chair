@@ -1,9 +1,26 @@
 "use client";
-import {useEffect, useState} from "react";
-export default function FindMyStylistModal({stylists}: {stylists:any[]}) {
+import { useState } from "react";
+
+interface Stylist {
+    id: number;
+    fullName: string;
+    specialties: string[];
+    rating: number;
+    location: string;
+    serviceIds: string[];
+    imageUrl?: string;
+}
+
+interface Recommendation {
+    id: string;
+    name: string;
+    reason: string;
+}
+
+export default function FindMyStylistModal({stylists}: {stylists:Stylist[]}) {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const [preference, setPreference] = useState<string>("");
-    const [recommendations, setRecommendations] = useState<any[]>([]);
+    const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
     const [loading, setLoading] = useState(false);
     
     async function handleFind(){
