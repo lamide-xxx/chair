@@ -1,5 +1,6 @@
 using Chair.Api.DTOs;
 using Chair.Domain.Entities;
+using Chair.Domain.Events;
 using Chair.Domain.Messaging;
 using Chair.Domain.Repositories;
 using Chair.Infrastructure.Messaging;
@@ -169,8 +170,8 @@ public class AppointmentsController : ControllerBase
         }
         
         var createdAppointment = await _appointmentRepository.AddAppointmentAsync(appointment);
-        await _sqsPublisher.PublishAsync(new {
-            Type = "BookingCreated",
+        await _sqsPublisher.PublishAsync(new BookingEvent{
+            Type = EventType.BookingCreated.ToString(),
             AppointmentId = createdAppointment.Id,
             StylistId = createdAppointment.StylistId,
             UserId = createdAppointment.UserId,
