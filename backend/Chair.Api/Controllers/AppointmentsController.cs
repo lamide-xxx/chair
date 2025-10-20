@@ -1,6 +1,8 @@
 using Chair.Api.DTOs;
 using Chair.Domain.Entities;
+using Chair.Domain.Messaging;
 using Chair.Domain.Repositories;
+using Chair.Infrastructure.Messaging;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chair.Api.Controllers;
@@ -13,18 +15,21 @@ public class AppointmentsController : ControllerBase
     private readonly IServiceRepository _serviceRepository;
     private readonly IStylistRepository _stylistRepository;
     private readonly IUserRepository _userRepository;
-    
+    private readonly IMessagePublisher _sqsPublisher;
+
     public AppointmentsController(
         IAppointmentRepository appointmentRepository,
         IUserRepository userRepository,
         IServiceRepository serviceRepository,
-        IStylistRepository stylistRepository)
+        IStylistRepository stylistRepository,
+        IMessagePublisher sqsPublisher)
         
     {
         _appointmentRepository = appointmentRepository;
         _userRepository = userRepository;
         _serviceRepository = serviceRepository;
         _stylistRepository = stylistRepository;
+        _sqsPublisher = sqsPublisher;
     }
     
     [HttpGet]
@@ -164,6 +169,14 @@ public class AppointmentsController : ControllerBase
         }
         
         var createdAppointment = await _appointmentRepository.AddAppointmentAsync(appointment);
+        await _sqsPublisher.PublishAsync(new {
+            Type = "BookingCreated",
+            AppointmentId = createdAppointment.Id,
+            StylistId = createdAppointment.StylistId,
+            UserId = createdAppointment.UserId,
+            Timestamp = DateTime.UtcNow
+        });
+        
         return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointment.Id }, createdAppointment);
     }
 
