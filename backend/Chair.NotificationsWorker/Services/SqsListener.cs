@@ -46,6 +46,11 @@ public class SqsListener : BackgroundService
 
                     // Process the message here
                     var bookingEvent = JsonSerializer.Deserialize<BookingEvent>(message.Body);
+
+                    if (new Random().NextDouble() < 0.2) // 20% chance to simulate failure
+                    {
+                        throw new Exception("Simulated transient failure");
+                    }
                     
                     Console.WriteLine($"Sending notification for AppointmentId {bookingEvent?.AppointmentId} of type {bookingEvent?.Type}");
                     
