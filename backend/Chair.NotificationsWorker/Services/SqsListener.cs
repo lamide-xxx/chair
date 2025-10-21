@@ -2,6 +2,7 @@ using System.Text.Json;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Chair.Domain.Events;
+using Polly;
 
 namespace Chair.NotificationsWorker.Services;
 
@@ -38,6 +39,14 @@ public class SqsListener : BackgroundService
                 continue;
             }
 
+            
+            var retryPolicy = Policy
+                .Handle<HttpRequestException>()
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timeSpan, retryCount, context) =>
+                    {
+                        Console.WriteLine($"Retry {retryCount} after: {timeSpan.TotalSeconds}s. Due to exception: {exception.Message}.");
+                    });
             foreach (var message in response.Messages)
             {
                 try
@@ -47,14 +56,10 @@ public class SqsListener : BackgroundService
                     // Process the message here
                     var bookingEvent = JsonSerializer.Deserialize<BookingEvent>(message.Body);
 
-                    if (new Random().NextDouble() < 0.2) // 20% chance to simulate failure
+                    await retryPolicy.ExecuteAsync(async () =>
                     {
-                        throw new Exception("Simulated transient failure");
-                    }
-                    
-                    Console.WriteLine($"Sending notification for AppointmentId {bookingEvent?.AppointmentId} of type {bookingEvent?.Type}");
-                    
-                    // TODO: send actual email/push here
+                        await SendNotificationAsync(bookingEvent);
+                    });
 
                     // Delete the message after processing
                     var deleteRequest = new DeleteMessageRequest
@@ -72,5 +77,17 @@ public class SqsListener : BackgroundService
                 }
             }
         }
+    }
+
+    private async Task SendNotificationAsync(BookingEvent bookingEvent)
+    {
+        if (new Random().NextDouble() < 0.9) // 20% chance to simulate failure
+        {
+            throw new HttpRequestException("Simulated transient failure");
+        }
+        await Task.Delay(5000);
+        Console.WriteLine($"Sending notification for AppointmentId {bookingEvent?.AppointmentId} of type {bookingEvent?.Type}");
+                    
+        // TODO: send actual email/push here
     }
 }
