@@ -5,10 +5,18 @@ using Chair.Infrastructure.Persistence;
 using Chair.Infrastructure.Repositories;
 using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 Env.Load();
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

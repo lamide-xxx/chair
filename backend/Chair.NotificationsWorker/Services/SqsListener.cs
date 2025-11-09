@@ -10,16 +10,18 @@ public class SqsListener : BackgroundService
 {
     private readonly string _queueUrl;
     private readonly AmazonSQSClient _sqsClient;
+    private readonly ILogger<SqsListener> _logger;
 
-    public SqsListener(IConfiguration configuration)
+    public SqsListener(IConfiguration configuration, ILogger<SqsListener> logger)
     {
-        _queueUrl = configuration["SQS_QUEUE_URL"] ?? throw new ArgumentNullException("SQS_QUEUE_URL is not configured");
+        _logger = logger;
+        _queueUrl = configuration["SQS_QUEUE_URL"] ?? throw new ArgumentNullException(nameof(configuration),"SQS_QUEUE_URL is not configured");
         _sqsClient = new AmazonSQSClient();
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Console.WriteLine($"SQS Listener started. Listening to queue {_queueUrl}");
+        _logger.LogInformation("SQS Listener started. Listening to queue {QueueUrl}", _queueUrl);
         
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -34,7 +36,7 @@ public class SqsListener : BackgroundService
             
             if (response.Messages == null || !response.Messages.Any())
             {
-                Console.WriteLine("No messages this round.");
+                _logger.LogInformation("No messages this round.");
                 await Task.Delay(5000, stoppingToken);
                 continue;
             }
@@ -45,13 +47,13 @@ public class SqsListener : BackgroundService
                 .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                     (exception, timeSpan, retryCount, context) =>
                     {
-                        Console.WriteLine($"Retry {retryCount} after: {timeSpan.TotalSeconds}s. Due to exception: {exception.Message}.");
+                        _logger.LogInformation("Retry {RetryCount} after: {TimeSpanTotalSeconds}s. Due to exception: {ExceptionMessage}.", retryCount, timeSpan.TotalSeconds, exception.Message);
                     });
             foreach (var message in response.Messages)
             {
                 try
                 {
-                    Console.WriteLine($"Received message: {message.Body}");
+                    _logger.LogInformation("Received message: {MessageBody}", message.Body);
 
                     // Process the message here
                     var bookingEvent = JsonSerializer.Deserialize<BookingEvent>(message.Body);
@@ -68,11 +70,11 @@ public class SqsListener : BackgroundService
                         ReceiptHandle = message.ReceiptHandle
                     };
                     _sqsClient.DeleteMessageAsync(deleteRequest, stoppingToken).Wait();
-                    Console.WriteLine("Message processed and deleted from queue.");
+                    _logger.LogInformation("Message processed and deleted from queue.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error processing message: {ex.Message}");
+                    _logger.LogInformation(ex, "Error processing message for queueUrl: {QueueUrl}", _queueUrl);
                     // Optionally handle the error, e.g., log it or move the message to a dead-letter queue
                 }
             }
@@ -86,7 +88,7 @@ public class SqsListener : BackgroundService
             throw new HttpRequestException("Simulated transient failure");
         }
         await Task.Delay(5000);
-        Console.WriteLine($"Sending notification for AppointmentId {bookingEvent?.AppointmentId} of type {bookingEvent?.Type}");
+        _logger.LogInformation("Sending notification for AppointmentId {AppointmentId} of type {BookingEventType}", bookingEvent?.AppointmentId, bookingEvent?.Type);
                     
         // TODO: send actual email/push here
     }
