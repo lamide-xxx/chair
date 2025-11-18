@@ -5,10 +5,14 @@ using Chair.Infrastructure.Persistence;
 using Chair.Infrastructure.Repositories;
 using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Serilog;
 
 Env.Load();
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+var myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -24,7 +28,7 @@ builder.Host.UseSerilog();
 //1. Add services to the container.
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
+    options.AddPolicy(name: myAllowSpecificOrigins,
         policy  =>
         {
             // policy.WithOrigins("http://localhost:3000") // Adjust the origin as needed;
@@ -36,6 +40,20 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService("Chair.Api"))
+    .WithTracing(tracing => tracing
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddEntityFrameworkCoreInstrumentation()
+        .AddOtlpExporter()
+    )
+    .WithMetrics(metrics => metrics
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddRuntimeInstrumentation()
+        .AddOtlpExporter()
+    );
 
 //2. Register application services.
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
@@ -61,14 +79,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors(MyAllowSpecificOrigins);
+app.UseCors(myAllowSpecificOrigins);
 app.MapControllers(); // Register controller routes automatically
 
 app.MapGet("/health", () => Results.Ok(new{ status = "Healthy", service = "Chair.Api" }))
    .WithName("HealthCheck")
    .WithOpenApi();
 
-
-app.Run();
+await app.RunAsync();
 
 

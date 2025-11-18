@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using Amazon.SQS;
 using Amazon.SQS.Model;
@@ -51,15 +52,28 @@ public class SqsListener : BackgroundService
                     });
             foreach (var message in response.Messages)
             {
+                using var activity = Telemetry.ActivitySource.StartActivity("ProcessBookingMessage");
                 try
                 {
+                    activity?.SetTag("sqs.message.id", message.MessageId);
+                    activity?.SetTag("sqs.receipt.handle", message.ReceiptHandle);
+                    activity?.SetTag("sqs.queue.url", _queueUrl);
+                    
                     _logger.LogInformation("Received message: {MessageBody}", message.Body);
 
                     // Process the message here
                     var bookingEvent = JsonSerializer.Deserialize<BookingEvent>(message.Body);
+                    
+                    activity?.SetTag("booking.appointmentId", bookingEvent?.AppointmentId);
+                    activity?.SetTag("booking.eventType", bookingEvent?.Type);
 
                     await retryPolicy.ExecuteAsync(async () =>
                     {
+                        using var sendActivity = Telemetry.ActivitySource.StartActivity("SendNotification");
+            
+                        sendActivity?.SetTag("notification.appointmentId", bookingEvent?.AppointmentId);
+                        sendActivity?.SetTag("notification.type", bookingEvent?.Type);
+                        
                         await SendNotificationAsync(bookingEvent);
                     });
 
@@ -74,6 +88,11 @@ public class SqsListener : BackgroundService
                 }
                 catch (Exception ex)
                 {
+                    activity?.SetStatus(ActivityStatusCode.Error);
+                    activity?.SetTag("exception.type", ex.GetType().Name);
+                    activity?.SetTag("exception.message", ex.Message);
+                    activity?.SetTag("exception.stacktrace", ex.StackTrace);
+                    
                     _logger.LogInformation(ex, "Error processing message for queueUrl: {QueueUrl}", _queueUrl);
                     // Optionally handle the error, e.g., log it or move the message to a dead-letter queue
                 }

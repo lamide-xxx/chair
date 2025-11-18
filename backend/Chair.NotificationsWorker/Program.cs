@@ -1,5 +1,8 @@
 using Chair.NotificationsWorker.Services;
 using DotNetEnv;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Serilog;
 
 Env.Load();
@@ -14,6 +17,16 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
 builder.Services.AddHostedService<SqsListener>();
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService("Chair.NotificationsWorker"))
+    .WithTracing(tracing => tracing
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter()
+    )
+    .WithMetrics(metrics => metrics
+        .AddRuntimeInstrumentation()
+        .AddOtlpExporter()
+    );
 
 var host = builder.Build();
 
