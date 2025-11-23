@@ -20,6 +20,7 @@ builder.Services.AddHostedService<SqsListener>();
 builder.Services.AddOpenTelemetry()
     .ConfigureResource(resource => resource.AddService("Chair.NotificationsWorker"))
     .WithTracing(tracing => tracing
+        .AddSource("Chair.NotificationsWorker")
         .AddHttpClientInstrumentation()
         .AddOtlpExporter()
     )

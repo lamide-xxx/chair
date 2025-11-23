@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Chair.Api.DTOs;
 using Chair.Domain.Entities;
 using Chair.Domain.Events;
@@ -149,7 +150,7 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] Appointment appointment)
+    public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] Appointment appointment, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetUserByIdAsync(appointment.UserId);
         if (user == null)
@@ -170,13 +171,17 @@ public class AppointmentsController : ControllerBase
         }
         
         var createdAppointment = await _appointmentRepository.AddAppointmentAsync(appointment);
-        await _sqsPublisher.PublishAsync(new BookingEvent{
+        var traceparent = Activity.Current?.Id;
+        await _sqsPublisher.PublishAsync(
+            new BookingEvent{
             Type = EventType.BookingCreated.ToString(),
             AppointmentId = createdAppointment.Id,
             StylistId = createdAppointment.StylistId,
             UserId = createdAppointment.UserId,
             Timestamp = DateTime.UtcNow
-        });
+            },
+            cancellationToken,
+            traceparent);
         
         return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointment.Id }, createdAppointment);
     }

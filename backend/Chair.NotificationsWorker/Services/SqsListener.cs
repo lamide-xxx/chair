@@ -20,25 +20,26 @@ public class SqsListener : BackgroundService
         _sqsClient = new AmazonSQSClient();
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("SQS Listener started. Listening to queue {QueueUrl}", _queueUrl);
         
-        while (!stoppingToken.IsCancellationRequested)
+        while (!cancellationToken.IsCancellationRequested)
         {
             var request = new ReceiveMessageRequest
             {
                 QueueUrl = _queueUrl,
                 MaxNumberOfMessages = 5,
-                WaitTimeSeconds = 10 // Long polling
+                WaitTimeSeconds = 10, // Long polling
+                MessageAttributeNames = new List<string> { "All" }   
             };
 
-            var response = await _sqsClient.ReceiveMessageAsync(request, stoppingToken);
+            var response = await _sqsClient.ReceiveMessageAsync(request, cancellationToken);
             
             if (response.Messages == null || !response.Messages.Any())
             {
                 _logger.LogInformation("No messages this round.");
-                await Task.Delay(5000, stoppingToken);
+                await Task.Delay(5000, cancellationToken);
                 continue;
             }
 
@@ -52,20 +53,37 @@ public class SqsListener : BackgroundService
                     });
             foreach (var message in response.Messages)
             {
-                using var activity = Telemetry.ActivitySource.StartActivity("ProcessBookingMessage");
+                // Process the message here
+                var bookingEvent = JsonSerializer.Deserialize<BookingEvent>(message.Body);
+                    
+                // recreate parent context
+                var parentContext = default(ActivityContext);
+                if (message.MessageAttributes == null)
+                {
+                    _logger.LogWarning("Message Attributes are null for messageId: {MessageId}", message.MessageId);
+                }
+                if (message.MessageAttributes != null 
+                    && message.MessageAttributes.TryGetValue("traceparent", out var traceparentAttribute)
+                    && !string.IsNullOrWhiteSpace(traceparentAttribute.StringValue))
+                {
+                    parentContext = ActivityContext.Parse(traceparentAttribute.StringValue, null);
+                }
+                
+                using var processActivity = Telemetry.ActivitySource.StartActivity("ProcessBookingMessage", ActivityKind.Consumer, parentContext);
+                
+                processActivity?.SetTag("messaging.system", "aws.sqs");
+                processActivity?.SetTag("messaging.destination_kind", "queue");
+                processActivity?.SetTag("messaging.destination", _queueUrl);
+                processActivity?.SetTag("messaging.operation", "process");
+                processActivity?.SetTag("messaging.message_id", message.MessageId);
+                
+                processActivity?.SetTag("booking.appointment_id", bookingEvent?.AppointmentId);
+                processActivity?.SetTag("booking.event_type", bookingEvent?.Type);
+                processActivity?.SetTag("sqs.receipt_handle", message.ReceiptHandle);
+                
                 try
                 {
-                    activity?.SetTag("sqs.message.id", message.MessageId);
-                    activity?.SetTag("sqs.receipt.handle", message.ReceiptHandle);
-                    activity?.SetTag("sqs.queue.url", _queueUrl);
-                    
                     _logger.LogInformation("Received message: {MessageBody}", message.Body);
-
-                    // Process the message here
-                    var bookingEvent = JsonSerializer.Deserialize<BookingEvent>(message.Body);
-                    
-                    activity?.SetTag("booking.appointmentId", bookingEvent?.AppointmentId);
-                    activity?.SetTag("booking.eventType", bookingEvent?.Type);
 
                     await retryPolicy.ExecuteAsync(async () =>
                     {
@@ -83,15 +101,15 @@ public class SqsListener : BackgroundService
                         QueueUrl = _queueUrl,
                         ReceiptHandle = message.ReceiptHandle
                     };
-                    _sqsClient.DeleteMessageAsync(deleteRequest, stoppingToken).Wait();
+                    await _sqsClient.DeleteMessageAsync(deleteRequest, cancellationToken);
                     _logger.LogInformation("Message processed and deleted from queue.");
                 }
                 catch (Exception ex)
                 {
-                    activity?.SetStatus(ActivityStatusCode.Error);
-                    activity?.SetTag("exception.type", ex.GetType().Name);
-                    activity?.SetTag("exception.message", ex.Message);
-                    activity?.SetTag("exception.stacktrace", ex.StackTrace);
+                    processActivity?.SetStatus(ActivityStatusCode.Error);
+                    processActivity?.SetTag("exception.type", ex.GetType().Name);
+                    processActivity?.SetTag("exception.message", ex.Message);
+                    processActivity?.SetTag("exception.stacktrace", ex.StackTrace);
                     
                     _logger.LogInformation(ex, "Error processing message for queueUrl: {QueueUrl}", _queueUrl);
                     // Optionally handle the error, e.g., log it or move the message to a dead-letter queue
@@ -102,7 +120,7 @@ public class SqsListener : BackgroundService
 
     private async Task SendNotificationAsync(BookingEvent bookingEvent)
     {
-        if (new Random().NextDouble() < 0.9) // 20% chance to simulate failure
+        if (new Random().NextDouble() < 0.1) // 20% chance to simulate failure
         {
             throw new HttpRequestException("Simulated transient failure");
         }
