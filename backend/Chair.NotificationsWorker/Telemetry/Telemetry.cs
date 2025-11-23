@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Chair.NotificationsWorker;
+namespace Chair.NotificationsWorker.Telemetry;
 
 public static class Telemetry
 {

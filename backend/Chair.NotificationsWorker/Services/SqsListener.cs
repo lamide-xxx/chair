@@ -3,6 +3,7 @@ using System.Text.Json;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Chair.Domain.Events;
+using Chair.NotificationsWorker.Telemetry;
 using Polly;
 
 namespace Chair.NotificationsWorker.Services;
@@ -31,7 +32,8 @@ public class SqsListener : BackgroundService
                 QueueUrl = _queueUrl,
                 MaxNumberOfMessages = 5,
                 WaitTimeSeconds = 10, // Long polling
-                MessageAttributeNames = new List<string> { "All" }   
+                MessageAttributeNames = new List<string> { "All" },
+                MessageSystemAttributeNames = new List<string> {"All"}
             };
 
             var response = await _sqsClient.ReceiveMessageAsync(request, cancellationToken);
@@ -53,6 +55,18 @@ public class SqsListener : BackgroundService
                     });
             foreach (var message in response.Messages)
             {
+                if (message.Attributes.TryGetValue("SentTimestamp", out var sentTimestampValue)
+                    && long.TryParse(sentTimestampValue, out var sentTimestamp))
+                {
+                    var enqueueTime = DateTimeOffset.FromUnixTimeMilliseconds(sentTimestamp);
+                    var queueLag = DateTimeOffset.UtcNow - enqueueTime;
+                    Telemetry.Metrics.Queuelag.Record(queueLag.TotalMilliseconds);
+                }
+                else
+                {
+                    _logger.LogWarning("SentTimestamp attribute missing or invalid for messageId: {MessageId}", message.MessageId);
+                }
+                
                 // Process the message here
                 var bookingEvent = JsonSerializer.Deserialize<BookingEvent>(message.Body);
                     
@@ -69,7 +83,7 @@ public class SqsListener : BackgroundService
                     parentContext = ActivityContext.Parse(traceparentAttribute.StringValue, null);
                 }
                 
-                using var processActivity = Telemetry.ActivitySource.StartActivity("ProcessBookingMessage", ActivityKind.Consumer, parentContext);
+                using var processActivity = Telemetry.Telemetry.ActivitySource.StartActivity("ProcessBookingMessage", ActivityKind.Consumer, parentContext);
                 
                 processActivity?.SetTag("messaging.system", "aws.sqs");
                 processActivity?.SetTag("messaging.destination_kind", "queue");
@@ -87,12 +101,15 @@ public class SqsListener : BackgroundService
 
                     await retryPolicy.ExecuteAsync(async () =>
                     {
-                        using var sendActivity = Telemetry.ActivitySource.StartActivity("SendNotification");
+                        using var sendActivity = Telemetry.Telemetry.ActivitySource.StartActivity("SendNotification");
             
                         sendActivity?.SetTag("notification.appointmentId", bookingEvent?.AppointmentId);
                         sendActivity?.SetTag("notification.type", bookingEvent?.Type);
                         
+                        var stopwatch = Stopwatch.StartNew();
                         await SendNotificationAsync(bookingEvent);
+                        stopwatch.Stop();
+                        Telemetry.Metrics.NotificationProcessingTime.Record(stopwatch.ElapsedMilliseconds);
                     });
 
                     // Delete the message after processing
@@ -111,6 +128,7 @@ public class SqsListener : BackgroundService
                     processActivity?.SetTag("exception.message", ex.Message);
                     processActivity?.SetTag("exception.stacktrace", ex.StackTrace);
                     
+                    Telemetry.Metrics.NotificationFailures.Add(1);
                     _logger.LogInformation(ex, "Error processing message for queueUrl: {QueueUrl}", _queueUrl);
                     // Optionally handle the error, e.g., log it or move the message to a dead-letter queue
                 }

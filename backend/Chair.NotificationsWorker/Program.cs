@@ -25,6 +25,7 @@ builder.Services.AddOpenTelemetry()
         .AddOtlpExporter()
     )
     .WithMetrics(metrics => metrics
+        .AddMeter("Chair.NotificationsWorker")
         .AddRuntimeInstrumentation()
         .AddOtlpExporter()
     );
