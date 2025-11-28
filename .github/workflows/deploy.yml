@@ -69,17 +69,9 @@ jobs:
     if: needs.detect_changes.outputs.backend == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Render Deploy
-        run: |
-          echo "Triggering Render deploy..."
-          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}\n" \
-            -X POST \
-            -H "Accept: application/json" \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            -d "{\"clearCache\": false}" \
-            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys")
-
-          echo "Raw response:"
-          echo "$RESPONSE"
-          echo "$RESPONSE" | grep "HTTP_STATUS"
+      - name: Deploy to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+      
