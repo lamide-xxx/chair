@@ -26,7 +26,7 @@ jobs:
             infra:
               - 'iac/**'
             backend:
-              - 'Chair.Api/**'
+              - 'backend/**'
             
   terraform:
     name: Terraform Plan & Apply
