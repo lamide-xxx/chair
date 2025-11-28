@@ -4,7 +4,6 @@ terraform {
     key    = "chair/terraform.tfstate" # Path within the bucket for the state file
     region = "eu-west-2"                  # AWS region where the S3 bucket is located
     encrypt = true                        # Enable server-side encryption for the state file
-    use_lockfile = true                  # Enable state locking to prevent concurrent modifications
     profile = "personal"               # Use the 'personal' AWS CLI profile for authentication
   }
   
