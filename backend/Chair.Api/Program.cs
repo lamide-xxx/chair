@@ -96,9 +96,15 @@ app.UseCors(myAllowSpecificOrigins);
 app.UseRateLimiter();
 app.MapControllers().RequireRateLimiting("global"); // Register controller routes automatically
 
-app.MapGet("/health", () => Results.Ok(new{ status = "Healthy", service = "Chair.Api" }))
-   .WithName("HealthCheck")
-   .WithOpenApi();
+app.MapGet("/healthz", () =>
+{
+    return Results.Ok(new
+    {
+        status = "Healthy",
+        service = "Chair.Api",
+        time = DateTime.UtcNow
+    });
+}).WithName("HealthCheck");
 
 await app.RunAsync();
 
