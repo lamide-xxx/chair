@@ -1,9 +1,11 @@
+using System.Threading.RateLimiting;
 using Chair.Domain.Messaging;
 using Chair.Domain.Repositories;
 using Chair.Infrastructure.Messaging;
 using Chair.Infrastructure.Persistence;
 using Chair.Infrastructure.Repositories;
 using DotNetEnv;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
@@ -39,6 +41,17 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = 429;
+    options.AddFixedWindowLimiter("global", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = 10; // max 10 requests
+        limiterOptions.Window = TimeSpan.FromSeconds(30); // per 30s window
+        limiterOptions.QueueLimit = 0; // allow 2 extra queued
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+});
 builder.Services.AddControllers();
 builder.Services.AddOpenTelemetry()
     .ConfigureResource(resource => resource.AddService("Chair.Api"))
@@ -80,7 +93,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors(myAllowSpecificOrigins);
-app.MapControllers(); // Register controller routes automatically
+app.UseRateLimiter();
+app.MapControllers().RequireRateLimiting("global"); // Register controller routes automatically
 
 app.MapGet("/health", () => Results.Ok(new{ status = "Healthy", service = "Chair.Api" }))
    .WithName("HealthCheck")
