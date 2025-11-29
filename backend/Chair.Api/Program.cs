@@ -48,7 +48,7 @@ builder.Services.AddRateLimiter(options =>
     {
         limiterOptions.PermitLimit = 10; // max 10 requests
         limiterOptions.Window = TimeSpan.FromSeconds(30); // per 30s window
-        limiterOptions.QueueLimit = 0; // allow 2 extra queued
+        limiterOptions.QueueLimit = 2; // allow 2 extra queued
         limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
     });
 });
