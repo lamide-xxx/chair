@@ -7,7 +7,6 @@ using Chair.Infrastructure.Repositories;
 using DotNetEnv;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
-using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -111,6 +110,26 @@ app.MapGet("/healthz", () =>
         time = DateTime.UtcNow
     });
 }).WithName("HealthCheck");
+
+app.MapDelete("/api/cleanup-test-user", async (AppDbContext db) =>
+    {
+        var testUserId = new Guid("2cd692eb-d4b8-4c1c-8026-c3677754bf30");
+        var testAppointments = db.Appointments.Where(a => a.UserId == testUserId);
+
+        var count = await testAppointments.CountAsync();
+        if (count == 0)
+        {
+            return Results.Ok(new { message = "No test data found." });
+        }
+
+        db.Appointments.RemoveRange(testAppointments);
+        await db.SaveChangesAsync();
+
+        return Results.Ok(new { message = $"Cleaned up {count} test appointments." });
+    })
+    .WithName("CleanupTestUser")
+    .WithOpenApi();
+
 
 await app.RunAsync();
 
