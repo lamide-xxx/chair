@@ -45,9 +45,9 @@ builder.Services.AddRateLimiter(options =>
     options.RejectionStatusCode = 429;
     options.AddFixedWindowLimiter("global", limiterOptions =>
     {
-        limiterOptions.PermitLimit = 10; // max 10 requests
+        limiterOptions.PermitLimit = 200; // max 200 requests
         limiterOptions.Window = TimeSpan.FromSeconds(30); // per 30s window
-        limiterOptions.QueueLimit = 2; // allow 2 extra queued
+        limiterOptions.QueueLimit = 20; // allow 20 extra queued
         limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
     });
 });
