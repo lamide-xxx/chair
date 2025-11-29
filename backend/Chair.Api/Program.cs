@@ -92,6 +92,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseHsts(); // HTTP Strict Transport Security
+app.UseXContentTypeOptions(); // Prevent MIME-type sniffing
+app.UseReferrerPolicy(opt => opt.NoReferrer());
+app.UseXXssProtection(opt => opt.EnabledWithBlockMode());
+app.UseXfo(opt => opt.Deny()); // Frame options
+
 app.UseCors(myAllowSpecificOrigins);
 app.UseRateLimiter();
 app.MapControllers().RequireRateLimiting("global"); // Register controller routes automatically
