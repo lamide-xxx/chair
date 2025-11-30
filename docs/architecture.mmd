@@ -1,0 +1,26 @@
+flowchart LR
+    subgraph Client
+        FE[Next.js Frontend]
+    end
+
+    subgraph Render
+        API[Chair.Api]
+    end
+
+    subgraph Local
+        Worker[Chair.NotificationsWorker]
+    end
+
+    subgraph AWS
+        SQS[(SQS Queue)]
+        DLQ[(DLQ)]
+    end
+
+    FE -->|HTTPS| API
+    API -->|Publish BookingCreated| SQS
+    Worker -->|Consume Events| SQS
+    SQS -->|Failed Messages| DLQ
+    API -->|Export Metrics + Traces| Grafana
+    API -->|Read/Write| Neon_Postgres
+    API -->|Generate Recommendations| OpenAI
+    Worker -->|Telemetry| Grafana

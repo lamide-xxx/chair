@@ -1,4 +1,4 @@
-#  System Architecture for Chair
+**#  System Architecture for Chair
 
 **Chair** is a stylist discovery and booking platform built to demonstrate real-world, production-grade engineering skills across backend, distributed systems, event-driven architecture, observability, and cloud deployment.
 
@@ -61,6 +61,13 @@ This provides real-time visibility into:
 - API error rates
 - End-to-end traces that propagate into the worker
 
+### AI-Powered Stylist Recommendations
+Integrated OpenAI API to enhance stylist discovery:
+- User describes desired hairstyle → backend generates recommended stylists based on service tags.
+- Runs as a separate microservice endpoint integrated into the stylist search flow.
+- Demonstrates **applied AI** integration into distributed architecture.
+
+
 ---
 
 ## Event-Driven Booking Pipeline
@@ -119,6 +126,11 @@ Messages that fail after retries are automatically routed to DLQ.
 #### ✔ Idempotent Handlers
 
 Worker ensures duplicate messages (SQS can deliver >1) don’t double-send notifications.
+
+#### ✔ Rate Limiting
+- Integrated middleware to enforce per-IP request throttling.
+- Protects backend endpoints from burst loads and abuse.
+- Returns `429 Too Many Requests` when exceeded — verified through Postman burst testing.
 
 ## Distributed Tracing (API → SQS → Worker)
 
@@ -200,6 +212,14 @@ Each component was chosen intentionally to:
 - Maximize reliability
 - Provide a modern cloud experience without vendor lock-in
 
+### Infrastructure as Code (Terraform)
+All AWS resources (SQS, DLQ, IAM roles) are provisioned through Terraform, with:
+- Remote S3 backend for state management
+- Least-privilege IAM policies for worker access
+- Tagged, version-controlled configuration for auditable infra
+
+This ensures the system can be re-created identically across environments — a prerequisite for real scalability.
+
 ---
 
 ## Scalability Features
@@ -210,13 +230,32 @@ Each component was chosen intentionally to:
 - DLQ prevents **systemic failures**.
 - OpenTelemetry metrics enable **data-driven autoscaling** decisions.
 
+
+## Load Testing & Resilience Validation
+Used **k6** to simulate 20 concurrent users hitting `/api/appointments` for 60s:
+- API sustained throughput with <2% error rate.
+- Queue lag and retry rates observed in Grafana.
+- Worker manually killed mid-run — DLQ captured unprocessed events as designed.
+
+Result: The system **recovered gracefully**, confirming reliability of async design.
 ---
 
-## 🧩 Future Infra Roadmap
+## Blue/Green Deployments
+- Render Preview Environments are now used to simulate Blue/Green deploys.  
+- Each deployment spins up a new environment, performs a `/healthz` probe, and promotes only if healthy.  
+- This enables **zero-downtime releases** and quick rollbacks for safer iteration.
 
+---
+##  Security & HTTPS
+Added:
+- `UseHttpsRedirection()`
+- Secure headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, etc.)
+  to harden the API against common web attacks.
+
+This elevates the app closer to **production-grade security posture**.
+
+##  Future Infra Roadmap
 - Redis caching (stylist search performance).
-- Blue/Green deployments.
-- Terraform Infrastructure-as-Code.
 - Kafka or SNS/SQS fanout.
 - Payment service decoupling.
-- Real email/SMS notifications.  
+- Real email/SMS notifications.
