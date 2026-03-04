@@ -1,12 +1,14 @@
 # Chair – Scalable Booking Platform
 
 > **An event-driven booking system built with Next.js, .NET, AWS SQS, Terraform, and Grafana Cloud**  
-> Designed to showcase distributed systems, observability, and infrastructure engineering in one cohesive project.
+
+---
+
+## I built this to showcase distributed systems, observability, and infrastructure engineering in one cohesive project!
 
 ---
 
 ## Overview
-
 Chair is a stylist discovery and booking platform demonstrating **real-world engineering principles**:
 - Event-driven architecture (async booking pipeline via AWS SQS)
 - Reliability patterns (DLQ, retries, idempotency)
@@ -51,14 +53,13 @@ Chair is a stylist discovery and booking platform demonstrating **real-world eng
 
 ---
 
-## What I Learned
+## Engineering Decisions
 
-- Why **event-driven architecture** enables scalable and fault-tolerant design
-- How to **instrument distributed tracing** across microservices
-- The role of **retries & backoff** in making systems reliable
-- The importance of **IaC** in making infrastructure reproducible, reviewable, and production-grade
-- How to use **AI** to extend domain logic intelligently
-- Techniques for **load testing** and validating system behavior under stress
+- **Event-driven over synchronous HTTP**: decoupled booking creation from notification delivery via SQS, enabling independent scaling and fault isolation without tight service coupling.
+- **Distributed tracing across service boundaries**: stitched API and worker traces together using W3C traceparent headers, giving full end-to-end visibility across async message flows, not just within a single service.
+- **DLQ's, Retries & backoff**: rather than treating failure as an edge case, modelled failure as a first-class concern from the start. DLQs isolate poison messages, retries with backoff handle transient failures, and idempotency keys prevent duplicate processing.
+- **IaC from day one**: provisioned all AWS resources via Terraform with remote S3 state, making infrastructure reproducible, reviewable, and deployable from CI without manual intervention
+- **Load testing as a design validation tool**: used K6 to vallidate sub-50ms P99 latency under stress and confirm reliable worker recovery from failure, treating performance as a measurable property rather than an assumption
 
 Full deep dive in [docs/architecture.md](docs/architecture.md).
 
